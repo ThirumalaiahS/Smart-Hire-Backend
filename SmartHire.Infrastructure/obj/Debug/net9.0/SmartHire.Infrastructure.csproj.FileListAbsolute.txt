@@ -1,0 +1,5 @@
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.csproj.AssemblyReference.cache
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.AssemblyInfoInputs.cache
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.AssemblyInfo.cs
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.csproj.CoreCompileInputs.cache
