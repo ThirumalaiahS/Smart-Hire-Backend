@@ -2,3 +2,12 @@ E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.Generat
 E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.AssemblyInfoInputs.cache
 E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.AssemblyInfo.cs
 E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.csproj.CoreCompileInputs.cache
+E:\Dev\smart-hire\Backend\SmartHire.Core\bin\Debug\net9.0\SmartHire.Core.deps.json
+E:\Dev\smart-hire\Backend\SmartHire.Core\bin\Debug\net9.0\SmartHire.Core.dll
+E:\Dev\smart-hire\Backend\SmartHire.Core\bin\Debug\net9.0\SmartHire.Core.pdb
+E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.csproj.AssemblyReference.cache
+E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.sourcelink.json
+E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.dll
+E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\refint\SmartHire.Core.dll
+E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\SmartHire.Core.pdb
+E:\Dev\smart-hire\Backend\SmartHire.Core\obj\Debug\net9.0\ref\SmartHire.Core.dll

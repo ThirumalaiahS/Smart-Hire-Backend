@@ -96,3 +96,4 @@ E:\Dev\smart-hire\Backend\SmartHire.Tests\obj\Debug\net9.0\refint\SmartHire.Test
 E:\Dev\smart-hire\Backend\SmartHire.Tests\obj\Debug\net9.0\SmartHire.Tests.pdb
 E:\Dev\smart-hire\Backend\SmartHire.Tests\obj\Debug\net9.0\SmartHire.Tests.genruntimeconfig.cache
 E:\Dev\smart-hire\Backend\SmartHire.Tests\obj\Debug\net9.0\ref\SmartHire.Tests.dll
+E:\Dev\smart-hire\Backend\SmartHire.Tests\obj\Debug\net9.0\SmartHire.Tests.sourcelink.json
