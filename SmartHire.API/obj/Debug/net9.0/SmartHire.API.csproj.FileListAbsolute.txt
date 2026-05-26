@@ -1,0 +1,7 @@
+E:\Dev\smart-hire\Backend\SmartHire.API\obj\Debug\net9.0\SmartHire.API.csproj.AssemblyReference.cache
+E:\Dev\smart-hire\Backend\SmartHire.API\obj\Debug\net9.0\rpswa.dswa.cache.json
+E:\Dev\smart-hire\Backend\SmartHire.API\obj\Debug\net9.0\SmartHire.API.GeneratedMSBuildEditorConfig.editorconfig
+E:\Dev\smart-hire\Backend\SmartHire.API\obj\Debug\net9.0\SmartHire.API.AssemblyInfoInputs.cache
+E:\Dev\smart-hire\Backend\SmartHire.API\obj\Debug\net9.0\SmartHire.API.AssemblyInfo.cs
+E:\Dev\smart-hire\Backend\SmartHire.API\obj\Debug\net9.0\SmartHire.API.csproj.CoreCompileInputs.cache
+E:\Dev\smart-hire\Backend\SmartHire.API\obj\Debug\net9.0\SmartHire.API.MvcApplicationPartsAssemblyInfo.cache
