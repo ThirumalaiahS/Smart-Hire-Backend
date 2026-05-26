@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartHire.Worker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3da1f227e63203cc007ab428e81a9dfd9ad6f516")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartHire.Worker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartHire.Worker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
