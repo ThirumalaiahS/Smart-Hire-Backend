@@ -18,6 +18,8 @@ builder.Host.UseSerilog();
 builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.AddMyAppServices();
 builder.Services.AddIdentityService();
+builder.Services.AddControllers();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -100,4 +102,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 app.Run();
+
+public partial class Program { }
