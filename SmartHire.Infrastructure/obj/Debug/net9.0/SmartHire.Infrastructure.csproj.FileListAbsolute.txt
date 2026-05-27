@@ -3,3 +3,16 @@ E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.In
 E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.AssemblyInfoInputs.cache
 E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.AssemblyInfo.cs
 E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.csproj.CoreCompileInputs.cache
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\bin\Debug\net9.0\SmartHire.Infrastructure.deps.json
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\bin\Debug\net9.0\SmartHire.Infrastructure.runtimeconfig.json
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\bin\Debug\net9.0\SmartHire.Infrastructure.dll
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\bin\Debug\net9.0\SmartHire.Infrastructure.pdb
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\bin\Debug\net9.0\SmartHire.Core.dll
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\bin\Debug\net9.0\SmartHire.Core.pdb
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.sourcelink.json
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHir.C28AAFFC.Up2Date
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.dll
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\refint\SmartHire.Infrastructure.dll
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.pdb
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\SmartHire.Infrastructure.genruntimeconfig.cache
+E:\Dev\smart-hire\Backend\SmartHire.Infrastructure\obj\Debug\net9.0\ref\SmartHire.Infrastructure.dll
