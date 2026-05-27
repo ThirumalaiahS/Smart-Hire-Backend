@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartHire.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b1d39337280b3adbe703ac3fe86a83c967d7d30c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b99f07db0eeb5b6f82683fd0d5262af920fa2d3")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartHire.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartHire.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
