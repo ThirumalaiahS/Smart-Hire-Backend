@@ -42,7 +42,7 @@ namespace SmartHire.Tests.Infrastructure
             var repo = _serviceProvider.GetService<IJobApplicationRepository>();
 
             // Assert
-            Assert.Null(repo);
+            Assert.NotNull(repo);
             Assert.IsType<JobApplicationRepository>(repo);
         }
 
