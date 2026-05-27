@@ -20,7 +20,7 @@ namespace SmartHire.Tests.Infrastructure
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    {"ConnectionStrings:DefaultConnection", "Server=DESKTOP-2EIRK23\\SQLEXPRESS;Database=SmartHireTest;Trusted_Connection=True;MultipleActiveResultSets=true"}
+                    {"ConnectionStrings:DefaultConnection", "Server=DESKTOP-2EIRK23\\SQLEXPRESS;Database=SmartHireTestDb;Trusted_Connection=True;TrustServerCertificate=True;"}
                 })
                 .Build();
 
