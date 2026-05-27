@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartHire.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed98b5b8d6360d5138ef311b421fd5b89569071d")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartHire.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartHire.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
