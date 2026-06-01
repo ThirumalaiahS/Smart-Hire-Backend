@@ -18,6 +18,8 @@ builder.Host.UseSerilog();
 builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.AddMyAppServices();
 builder.Services.AddIdentityService();
+builder.Services.AddControllers();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -69,10 +71,13 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using(var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -100,4 +105,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 app.Run();
+
+public partial class Program { }
