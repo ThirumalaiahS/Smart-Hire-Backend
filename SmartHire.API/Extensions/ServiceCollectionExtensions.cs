@@ -23,8 +23,8 @@ namespace SmartHire.API.Extensions
                 o.Password.RequiredLength = 8;
                 o.Password.RequireNonAlphanumeric = false;
             })
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
             return services;
         }
