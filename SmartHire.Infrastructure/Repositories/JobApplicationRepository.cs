@@ -1,55 +1,65 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SmartHire.Core.Entities;
+﻿using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
-using SmartHire.Infrastructure.Data;
+using SmartHire.Infrastructure.Repositories.AdoNet;
+using SmartHire.Infrastructure.Repositories.Dapper;
+using SmartHire.Infrastructure.Repositories.EfCore;
+using static SmartHire.Core.Common.CommonEnums;
 
 namespace SmartHire.Infrastructure.Repositories
 {
     public class JobApplicationRepository : IJobApplicationRepository
     {
-        private readonly AppDbContext _db;
+        private readonly IEnumerable<IJobApplicationRepository> _repositories;
+        private readonly IDataProviderService _dataProviderService;
 
-        public JobApplicationRepository(AppDbContext db)
+        public JobApplicationRepository(
+            IEnumerable<IJobApplicationRepository> repositories,
+            IDataProviderService dataProviderService)
         {
-            _db = db;
+            _repositories = repositories;
+            _dataProviderService = dataProviderService;
         }
+
+        private async Task<IJobApplicationRepository> GetRepositoryAsync()
+        {
+            var providerType = await _dataProviderService.GetCurrentUserDataProviderTypeAsync();
+            
+            // The specific repositories inherit from BaseRepository which has GetDataProviderType()
+            // We need to find the one that matches.
+            var repo = _repositories.FirstOrDefault(r => 
+                r is BaseRepository baseRepo && baseRepo.GetDataProviderType() == providerType);
+
+            return repo ?? _repositories.First(r => r is not JobApplicationRepository);
+        }
+
         public async Task<JobApplication> AddAsync(JobApplication application)
         {
-            await _db.JobApplications.AddAsync(application);
-            await _db.SaveChangesAsync();
-            return application;
+            var repo = await GetRepositoryAsync();
+            return await repo.AddAsync(application);
         }
 
         public async Task DeleteAsync(int id, string userId)
         {
-           var application = await _db.JobApplications.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
-            if (application is not null)
-            {
-                _db.JobApplications.Remove(application);
-                await _db.SaveChangesAsync();
-            }
+            var repo = await GetRepositoryAsync();
+            await repo.DeleteAsync(id, userId);
         }
 
         public async Task<IEnumerable<JobApplication>> GetAllByUserIdAsync(string userId, ApplicationStatus? status = null)
         {
-            var query = _db.JobApplications.Where(a => a.UserId == userId);
-            if (status.HasValue)
-            {
-                query = query.Where(a => a.Status == status.Value);
-            }
-            return await query.OrderByDescending(a => a.AppliedDate).ToListAsync();
+            var repo = await GetRepositoryAsync();
+            return await repo.GetAllByUserIdAsync(userId, status);
         }
 
         public async Task<JobApplication?> GetByIdAsync(int id, string userId)
         {
-            return await _db.JobApplications.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+            var repo = await GetRepositoryAsync();
+            return await repo.GetByIdAsync(id, userId);
         }
 
         public async Task UpdateAsync(JobApplication application)
         {
-            application.UpdatedAt = DateTime.UtcNow;
-            _db.JobApplications.Update(application);
-            await _db.SaveChangesAsync();
+            var repo = await GetRepositoryAsync();
+            await repo.UpdateAsync(application);
         }
     }
 }
