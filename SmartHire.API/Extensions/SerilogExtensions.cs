@@ -14,5 +14,10 @@ namespace SmartHire.API.Extensions
 
             hostBuilder.UseSerilog();
         }
+
+        public static IApplicationBuilder UseSerilogLogging(this IApplicationBuilder app)
+        {
+            return app.UseSerilogRequestLogging();
+        }
     }
 }
