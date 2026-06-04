@@ -18,6 +18,7 @@ namespace SmartHire.API.Extensions
         public static IServiceCollection AddMyAppServices(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IDataProviderService, DataProviderService>();
             services.AddScoped<ITokenService, TokenService>();
 
@@ -50,6 +51,22 @@ namespace SmartHire.API.Extensions
                         sp.GetRequiredService<EfCoreDashboardRepository>(),
                         sp.GetRequiredService<DapperDashboardRepository>(),
                         sp.GetRequiredService<AdoNetDashboardRepository>()
+                    },
+                    sp.GetRequiredService<IDataProviderService>()
+                ));
+
+            // Log repositories
+            services.AddScoped<EfCoreLogRepository>();
+            services.AddScoped<DapperLogRepository>();
+            services.AddScoped<AdoNetLogRepository>();
+
+            services.AddScoped<ILogRepository>(sp =>
+                new LogRepository(
+                    new ILogRepository[]
+                    {
+                        sp.GetRequiredService<EfCoreLogRepository>(),
+                        sp.GetRequiredService<DapperLogRepository>(),
+                        sp.GetRequiredService<AdoNetLogRepository>()
                     },
                     sp.GetRequiredService<IDataProviderService>()
                 ));

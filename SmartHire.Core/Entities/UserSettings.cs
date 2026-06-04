@@ -8,7 +8,7 @@ namespace SmartHire.Core.Entities
 {
     public class UserSettings
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public int DataProviderId { get; set; }
 
         // Navigation property to DataProvider

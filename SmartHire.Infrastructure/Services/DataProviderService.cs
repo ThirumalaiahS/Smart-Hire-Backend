@@ -11,17 +11,17 @@ namespace SmartHire.Infrastructure.Services
     public class DataProviderService : IDataProviderService
     {
         private readonly AppDbContext _db;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserContextService _userContextService;
 
-        public DataProviderService(AppDbContext db, IHttpContextAccessor httpContextAccessor)
+        public DataProviderService(AppDbContext db, IUserContextService userContextService)
         {
             _db = db;
-            _httpContextAccessor = httpContextAccessor;
+            _userContextService = userContextService;
         }
 
         public async Task<DataProviderType> GetCurrentUserDataProviderTypeAsync()
         {
-            var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _userContextService.GetUserId();
             if (string.IsNullOrEmpty(userId))
             {
                 return DataProviderType.EFCore; // Default
@@ -29,7 +29,7 @@ namespace SmartHire.Infrastructure.Services
 
             var settings = await _db.UserSettings
                 .Include(us => us.DataProvider)
-                .FirstOrDefaultAsync(us => us.UserId.ToString() == userId);
+                .FirstOrDefaultAsync(us => us.UserId == userId);
 
             if (settings == null)
             {

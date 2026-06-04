@@ -18,6 +18,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseExceptionHandling();
 await app.ApplyMigrationsIfNotTestingAsync();
 app.UseSwaggerIfDevelopment();
 app.UseHttpsRedirection();
