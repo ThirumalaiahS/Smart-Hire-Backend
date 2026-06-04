@@ -1,10 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartHire.API.Middlewares;
 using SmartHire.Infrastructure.Data;
 
 namespace SmartHire.API.Extensions
 {
     public static class MiddlewareExtensions
     {
+        public static IApplicationBuilder UseExceptionHandling(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<ExceptionHandling>();
+        }
+
         public static async Task ApplyMigrationsIfNotTestingAsync(this WebApplication app)
         {
             if (!app.Environment.IsEnvironment("Testing"))

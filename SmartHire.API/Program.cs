@@ -18,12 +18,19 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-await app.ApplyMigrationsIfNotTestingAsync();
+app.UseExceptionHandling();
 app.UseSwaggerIfDevelopment();
 app.UseHttpsRedirection();
+
+app.UseRouting();
+app.UseSerilogLogging();
 app.UseConfiguredCors(app.Configuration);
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+await app.ApplyMigrationsIfNotTestingAsync();
+
 app.MapControllers();
 app.MapHealthChecks("/health");
 app.Run();
