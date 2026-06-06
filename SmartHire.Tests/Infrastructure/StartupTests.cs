@@ -15,24 +15,6 @@ namespace SmartHire.Tests.Infrastructure
             _factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("Testing");
-                builder.ConfigureServices(services =>
-                {
-                    // Remove the real DbContext registration
-                    var descriptors = services.Where(
-                        d => d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
-                             d.ServiceType == typeof(DbContextOptions)).ToList();
-
-                    foreach (var descriptor in descriptors)
-                    {
-                        services.Remove(descriptor);
-                    }
-
-                    // Add In-Memory database for testing
-                    services.AddDbContext<AppDbContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("InMemoryAppDbForTesting");
-                    });
-                });
             });
         }
 

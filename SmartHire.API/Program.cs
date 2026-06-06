@@ -1,4 +1,3 @@
-using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using SmartHire.API.Extensions;
 using SmartHire.Infrastructure.Data;
@@ -6,7 +5,17 @@ using SmartHire.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureSerilog(builder.Configuration);
-builder.Services.AddDatabaseContext(builder.Configuration);
+
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseInMemoryDatabase("InMemoryAppDbForTesting"));
+}
+else
+{
+    builder.Services.AddDatabaseContext(builder.Configuration);
+}
+
 builder.Services.AddMyAppServices();
 builder.Services.AddIdentityService();
 builder.Services.AddControllers();
