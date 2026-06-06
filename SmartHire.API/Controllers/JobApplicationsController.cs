@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartHire.Core.DTOs;
 using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
+using System.Net;
 
 namespace SmartHire.API.Controllers
 {
@@ -20,41 +22,44 @@ namespace SmartHire.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobApplication>>> GetJobApplications([FromQuery] ApplicationStatus? status)
+        public async Task<IActionResult> GetJobApplications([FromQuery] ApplicationStatus? status)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
             var applications = await _repository.GetAllByUserIdAsync(userId, status);
-            return Ok(applications);
+            return Ok(ApiResponse<IEnumerable<JobApplication>>.SuccessResponse(applications));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobApplication>> GetJobApplication(int id)
+        public async Task<IActionResult> GetJobApplication(int id)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
             var application = await _repository.GetByIdAsync(id, userId);
 
             if (application == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<object>.ErrorResponse(new List<string> { "Job application not found" }, statusCode: (int)HttpStatusCode.NotFound));
             }
 
-            return Ok(application);
+            return Ok(ApiResponse<JobApplication>.SuccessResponse(application));
         }
 
         [HttpPost]
-        public async Task<ActionResult<JobApplication>> CreateJobApplication(JobApplication application)
+        public async Task<IActionResult> CreateJobApplication(JobApplication application)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
             application.UserId = userId;
             var createdApplication = await _repository.AddAsync(application);
 
-            return CreatedAtAction(nameof(GetJobApplication), new { id = createdApplication.Id }, createdApplication);
+            return CreatedAtAction(nameof(GetJobApplication), new { id = createdApplication.Id }, ApiResponse<JobApplication>.SuccessResponse(createdApplication, statusCode: (int)HttpStatusCode.Created));
         }
 
         [HttpPut("{id}")]
@@ -62,31 +67,38 @@ namespace SmartHire.API.Controllers
         {
             if (id != application.Id)
             {
-                return BadRequest();
+                return BadRequest(ApiResponse<object>.ErrorResponse(new List<string> { "ID mismatch" }));
             }
 
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
             // Ensure the user owns the application
             var existing = await _repository.GetByIdAsync(id, userId);
-            if (existing == null) return NotFound();
+            if (existing == null) 
+                return NotFound(ApiResponse<object>.ErrorResponse(new List<string> { "Job application not found" }, statusCode: (int)HttpStatusCode.NotFound));
 
             application.UserId = userId; // Ensure UserId is set to the current user
             await _repository.UpdateAsync(application);
 
-            return NoContent();
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Job application updated successfully."));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJobApplication(int id)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
+
+            var existing = await _repository.GetByIdAsync(id, userId);
+            if (existing == null) 
+                return NotFound(ApiResponse<object>.ErrorResponse(new List<string> { "Job application not found" }, statusCode: (int)HttpStatusCode.NotFound));
 
             await _repository.DeleteAsync(id, userId);
 
-            return NoContent();
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Job application deleted successfully."));
         }
     }
 }

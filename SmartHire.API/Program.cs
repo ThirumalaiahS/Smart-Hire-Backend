@@ -23,7 +23,7 @@ var app = builder.Build();
 app.SeedRoles();
 
 app.UseExceptionHandling();
-app.UseSwaggerIfDevelopment();
+app.UseSwaggerIfDevelopment();  
 app.UseHttpsRedirection();
 
 app.UseRouting();

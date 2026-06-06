@@ -78,13 +78,14 @@ namespace SmartHire.Tests.Auth
             var result = await _controller.Register(registerDto);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<UserDto>>(result);
-            var userDto = Assert.IsType<UserDto>(actionResult.Value);
-            Assert.Equal(registerDto.Email, userDto.Email);
-            Assert.Equal("fake-token", userDto.Token);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<ApiResponse<UserDto>>(okResult.Value);
+            Assert.True(response.Success);
+            Assert.Equal(registerDto.Email, response.Data!.Email);
+            Assert.Equal("fake-token", response.Data.Token);
         }
 
-        [Fact]  
+        [Fact]
         public async Task Login_ReturnsUnauthorized_WhenUserIsDeactivated()
         {
             // Arrange
@@ -98,9 +99,10 @@ namespace SmartHire.Tests.Auth
             var result = await _controller.Login(loginDto);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<UserDto>>(result);
-            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
-            Assert.Equal("Account is deactivated. Please contact support.", unauthorizedResult.Value);
+            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            var response = Assert.IsType<ApiResponse<UserDto>>(unauthorizedResult.Value);
+            Assert.False(response.Success);
+            Assert.Contains("Account is deactivated", response.Errors[0]);
         }
 
         [Fact]
@@ -118,7 +120,9 @@ namespace SmartHire.Tests.Auth
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("Account deactivated successfully.", okResult.Value);
+            var response = Assert.IsType<ApiResponse<object>>(okResult.Value);
+            Assert.True(response.Success);
+            Assert.Equal("Account deactivated successfully.", response.Message);
             Assert.False(user.IsActive);
         }
 
@@ -138,7 +142,9 @@ namespace SmartHire.Tests.Auth
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("User deleted successfully.", okResult.Value);
+            var response = Assert.IsType<ApiResponse<object>>(okResult.Value);
+            Assert.True(response.Success);
+            Assert.Equal("User deleted successfully.", response.Message);
         }
 
         [Fact]
@@ -157,9 +163,11 @@ namespace SmartHire.Tests.Auth
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            // Using reflection or dynamic to check the anonymous object
-            var value = okResult.Value as dynamic;
-            Assert.NotNull(value);
+            var response = Assert.IsType<ApiResponse<object>>(okResult.Value);
+            Assert.True(response.Success);
+            // Using reflection or dynamic to check the anonymous object inside response.Data
+            var data = response.Data as dynamic;
+            Assert.NotNull(data);
         }
     }
 }
