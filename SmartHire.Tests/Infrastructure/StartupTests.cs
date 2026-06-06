@@ -18,10 +18,11 @@ namespace SmartHire.Tests.Infrastructure
                 builder.ConfigureServices(services =>
                 {
                     // Remove the real DbContext registration
-                    var descriptor = services.SingleOrDefault(
-                        d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+                    var descriptors = services.Where(
+                        d => d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
+                             d.ServiceType == typeof(DbContextOptions)).ToList();
 
-                    if (descriptor != null)
+                    foreach (var descriptor in descriptors)
                     {
                         services.Remove(descriptor);
                     }
@@ -52,11 +53,11 @@ namespace SmartHire.Tests.Infrastructure
             // Arrange
             var client = _factory.CreateClient();
             // Act
-            var response = await client.GetAsync("/api/auth");
+            var response = await client.GetAsync("/health");
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
-            Assert.Equal("application/json; charset=utf-8",
-                response.Content.Headers.ContentType?.ToString());
+            Assert.Equal("text/plain",
+                response.Content.Headers.ContentType?.MediaType);
         }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SmartHire.Core.Entities;
@@ -12,10 +13,12 @@ namespace SmartHire.Infrastructure.Services
     {
         private readonly SymmetricSecurityKey _key;
         private readonly IConfiguration _config;
+        private readonly UserManager<AppUser> _userManager;
 
-        public TokenService(IConfiguration config)
+        public TokenService(IConfiguration config, UserManager<AppUser> userManager)
         {
             _config = config;
+            _userManager = userManager;
             var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET") 
                             ?? config["JwtSettings:SecretKey"];
             
@@ -27,7 +30,7 @@ namespace SmartHire.Infrastructure.Services
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         }
 
-        public string CreateToken(AppUser user)
+        public async Task<string> CreateToken(AppUser user)
         {
             var claims = new List<Claim>
             {
@@ -35,6 +38,9 @@ namespace SmartHire.Infrastructure.Services
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id),
                 new Claim(JwtRegisteredClaimNames.GivenName, user.FullName)
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 

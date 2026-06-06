@@ -14,5 +14,12 @@ namespace SmartHire.Core.Common
             Dapper,
             AdoNet
         }
+        public enum UserRole
+        {
+            None,
+            Admin,
+            Recruiter,
+            Candidate
+        }
     }
 }

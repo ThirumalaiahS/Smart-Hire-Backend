@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using SmartHire.API.Extensions;
 using SmartHire.Infrastructure.Data;
@@ -9,6 +10,7 @@ builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.AddMyAppServices();
 builder.Services.AddIdentityService();
 builder.Services.AddControllers();
+builder.Services.AddValidatorService();
 builder.Services.AddHealthChecks();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -17,6 +19,8 @@ builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.SeedRoles();
 
 app.UseExceptionHandling();
 app.UseSwaggerIfDevelopment();

@@ -28,9 +28,9 @@ namespace SmartHire.API.Extensions
             services.AddScoped<AdoNetJobApplicationRepository>();
 
             // Register the dispatcher as the primary implementation
-            services.AddScoped<IJobApplicationRepository>(sp => 
+            services.AddScoped<IJobApplicationRepository>(sp =>
                 new JobApplicationRepository(
-                    new IJobApplicationRepository[] 
+                    new IJobApplicationRepository[]
                     {
                         sp.GetRequiredService<EfCoreJobApplicationRepository>(),
                         sp.GetRequiredService<DapperJobApplicationRepository>(),
@@ -44,9 +44,9 @@ namespace SmartHire.API.Extensions
             services.AddScoped<DapperDashboardRepository>();
             services.AddScoped<AdoNetDashboardRepository>();
 
-            services.AddScoped<IDashboardRepository>(sp => 
+            services.AddScoped<IDashboardRepository>(sp =>
                 new DashboardRepository(
-                    new IDashboardRepository[] 
+                    new IDashboardRepository[]
                     {
                         sp.GetRequiredService<EfCoreDashboardRepository>(),
                         sp.GetRequiredService<DapperDashboardRepository>(),
@@ -78,7 +78,7 @@ namespace SmartHire.API.Extensions
         {
             services.AddIdentity<AppUser, IdentityRole>(o =>
             {
-                o.Password.RequireDigit = true; 
+                o.Password.RequireDigit = true;
                 o.Password.RequiredLength = 8;
                 o.Password.RequireNonAlphanumeric = false;
             })
@@ -86,6 +86,22 @@ namespace SmartHire.API.Extensions
             .AddDefaultTokenProviders();
 
             return services;
+        }
+        public static IApplicationBuilder SeedRoles(this IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var roles = new[] { "Admin", "Recruiter", "Candidate" };
+                foreach (var role in roles)
+                {
+                    if (!roleManager.RoleExistsAsync(role).Result)
+                    {
+                        roleManager.CreateAsync(new IdentityRole(role)).Wait();
+                    }
+                }
+            }
+            return app;
         }
     }
 
