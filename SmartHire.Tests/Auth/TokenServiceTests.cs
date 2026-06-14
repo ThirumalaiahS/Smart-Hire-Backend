@@ -50,7 +50,7 @@ namespace SmartHire.Tests.Auth
                 .ReturnsAsync(roles);
 
             // Act
-            var token = await _tokenService.CreateToken(user);
+            var token = await _tokenService.CreateToken(user, CancellationToken.None);
 
             // Assert
             Assert.NotNull(token);

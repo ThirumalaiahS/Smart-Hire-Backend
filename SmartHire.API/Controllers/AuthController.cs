@@ -31,7 +31,7 @@ namespace SmartHire.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register(RegisterDto registerDto, CancellationToken cancellationToken)
         {
             var user = new AppUser
             {
@@ -56,7 +56,7 @@ namespace SmartHire.API.Controllers
             {
                 Email = user.Email!,
                 FullName = user.FullName,
-                Token = await _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user, cancellationToken)
             };
 
             return Ok(ApiResponse<UserDto>.SuccessResponse(userDto, statusCode: (int)HttpStatusCode.OK));
@@ -64,7 +64,7 @@ namespace SmartHire.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]         
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login(LoginDto loginDto, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
@@ -83,7 +83,7 @@ namespace SmartHire.API.Controllers
             {
                 Email = user.Email!,
                 FullName = user.FullName,
-                Token = await _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user, cancellationToken)
             };
 
             return Ok(ApiResponse<UserDto>.SuccessResponse(userDto, statusCode: (int)HttpStatusCode.OK));
@@ -91,7 +91,7 @@ namespace SmartHire.API.Controllers
 
         [Authorize]
         [HttpPost("deactivate")]
-        public async Task<IActionResult> DeactivateAccount()
+        public async Task<IActionResult> DeactivateAccount(CancellationToken cancellationToken)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) 
@@ -108,7 +108,7 @@ namespace SmartHire.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteUser(string id, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) 
@@ -123,7 +123,7 @@ namespace SmartHire.API.Controllers
 
         [HttpPost("forgot-password")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             if (user == null) 
@@ -138,7 +138,7 @@ namespace SmartHire.API.Controllers
 
         [HttpPost("reset-password")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
             if (user == null) 

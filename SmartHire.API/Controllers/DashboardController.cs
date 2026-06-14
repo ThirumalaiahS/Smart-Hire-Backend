@@ -21,24 +21,24 @@ namespace SmartHire.API.Controllers
         }
 
         [HttpGet("stats")]
-        public async Task<IActionResult> GetStats()
+        public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
             var userId = _userContext.GetUserId();
             if (string.IsNullOrEmpty(userId)) 
                 return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
-            var stats = await _repository.GetDashboardStatsAsync(userId);
+            var stats = await _repository.GetDashboardStatsAsync(userId, cancellationToken);
             return Ok(ApiResponse<DashboardStatsDto>.SuccessResponse(stats));
         }
 
         [HttpGet("monthly")]
-        public async Task<IActionResult> GetMonthly()
+        public async Task<IActionResult> GetMonthly(CancellationToken cancellationToken)
         {
             var userId = _userContext.GetUserId();
             if (string.IsNullOrEmpty(userId)) 
                 return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
-            var monthly = await _repository.GetMonthlyApplicationsAsync(userId);
+            var monthly = await _repository.GetMonthlyApplicationsAsync(userId, cancellationToken);
             return Ok(ApiResponse<IEnumerable<MonthlyApplicationDto>>.SuccessResponse(monthly));
         }
     }

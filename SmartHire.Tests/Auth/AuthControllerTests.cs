@@ -71,11 +71,11 @@ namespace SmartHire.Tests.Auth
                 .ReturnsAsync(IdentityResult.Success);
             _mockUserManager.Setup(x => x.AddToRoleAsync(It.IsAny<AppUser>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
-            _mockTokenService.Setup(x => x.CreateToken(It.IsAny<AppUser>()))
+            _mockTokenService.Setup(x => x.CreateToken(It.IsAny<AppUser>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync("fake-token");
 
             // Act
-            var result = await _controller.Register(registerDto);
+            var result = await _controller.Register(registerDto, CancellationToken.None);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -96,7 +96,7 @@ namespace SmartHire.Tests.Auth
                 .ReturnsAsync(user);
 
             // Act
-            var result = await _controller.Login(loginDto);
+            var result = await _controller.Login(loginDto, CancellationToken.None);
 
             // Assert
             var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
@@ -116,7 +116,7 @@ namespace SmartHire.Tests.Auth
                 .ReturnsAsync(IdentityResult.Success);
 
             // Act
-            var result = await _controller.DeactivateAccount();
+            var result = await _controller.DeactivateAccount(CancellationToken.None);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -138,7 +138,7 @@ namespace SmartHire.Tests.Auth
                 .ReturnsAsync(IdentityResult.Success);
 
             // Act
-            var result = await _controller.DeleteUser(userId);
+            var result = await _controller.DeleteUser(userId, CancellationToken.None);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -159,7 +159,7 @@ namespace SmartHire.Tests.Auth
                 .ReturnsAsync("reset-token");
 
             // Act
-            var result = await _controller.ForgotPassword(forgotPasswordDto);
+            var result = await _controller.ForgotPassword(forgotPasswordDto, CancellationToken.None);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -168,6 +168,32 @@ namespace SmartHire.Tests.Auth
             // Using reflection or dynamic to check the anonymous object inside response.Data
             var data = response.Data as dynamic;
             Assert.NotNull(data);
+        }
+
+        [Fact]
+        public async Task ResetPassword_ReturnsOk_WhenSuccessful()
+        {
+            // Arrange
+            var resetPasswordDto = new ResetPasswordDto 
+            { 
+                Email = "test@example.com", 
+                Token = "reset-token", 
+                NewPassword = "NewPassword123!" 
+            };
+            var user = new AppUser { Email = "test@example.com" };
+            _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email))
+                .ReturnsAsync(user);
+            _mockUserManager.Setup(x => x.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.NewPassword))
+                .ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _controller.ResetPassword(resetPasswordDto, CancellationToken.None);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<ApiResponse<object>>(okResult.Value);
+            Assert.True(response.Success);
+            Assert.Equal("Password reset successfully.", response.Message);
         }
     }
 }

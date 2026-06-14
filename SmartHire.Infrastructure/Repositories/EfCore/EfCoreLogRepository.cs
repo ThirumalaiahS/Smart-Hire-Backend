@@ -17,10 +17,10 @@ namespace SmartHire.Infrastructure.Repositories.EfCore
         {
         }
 
-        public async Task CreateErrorLogAsync(ErrorLogs errorLogs)
+        public async Task CreateErrorLogAsync(ErrorLogs errorLogs, CancellationToken cancellationToken = default)
         {
-            await _db.ErrorLogs.AddAsync(errorLogs);
-            await _db.SaveChangesAsync();
+            await _db.ErrorLogs.AddAsync(errorLogs, cancellationToken);
+            await _db.SaveChangesAsync(cancellationToken);
         }
     }
 }

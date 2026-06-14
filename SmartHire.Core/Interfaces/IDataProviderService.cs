@@ -4,6 +4,6 @@ namespace SmartHire.Core.Interfaces
 {
     public interface IDataProviderService
     {
-        Task<DataProviderType> GetCurrentUserDataProviderTypeAsync();
+        Task<DataProviderType> GetCurrentUserDataProviderTypeAsync(CancellationToken cancellationToken = default);
     }
 }

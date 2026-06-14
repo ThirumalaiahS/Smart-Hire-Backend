@@ -11,7 +11,7 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
         {
         }
 
-        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId)
+        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId, CancellationToken cancellationToken = default)
         {
              const string sql = @"
                 SELECT 
@@ -31,9 +31,9 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             using var command = new SqlCommand(sql, connection);
             command.Parameters.AddWithValue("@userId", userId);
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            await connection.OpenAsync(cancellationToken);
+            using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
             {
                 int total = reader.IsDBNull(0) ? 0 : reader.GetInt32(0);
                 int active = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
@@ -48,7 +48,7 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             return new DashboardStatsDto(0, 0, 0, 0, 0, 0);
         }
 
-        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId)
+        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId, CancellationToken cancellationToken = default)
         {
             var results = new List<MonthlyApplicationDto>();
             const string sql = @"
@@ -64,9 +64,9 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             using var command = new SqlCommand(sql, connection);
             command.Parameters.AddWithValue("@userId", userId);
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await connection.OpenAsync(cancellationToken);
+            using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 results.Add(new MonthlyApplicationDto(
                     reader.GetString(0),

@@ -13,9 +13,9 @@ namespace SmartHire.Infrastructure.Repositories.EfCore
         {
         }
 
-        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId)
+        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId, CancellationToken cancellationToken = default)
         {
-            var apps = await _db.JobApplications.Where(a => a.UserId == userId).ToListAsync();
+            var apps = await _db.JobApplications.Where(a => a.UserId == userId).ToListAsync(cancellationToken);
             
             int total = apps.Count;
             int interviews = apps.Count(a => a.Status == ApplicationStatus.Interview);
@@ -31,12 +31,12 @@ namespace SmartHire.Infrastructure.Repositories.EfCore
             return new DashboardStatsDto(total, active, interviews, offers, rejected, Math.Round(responseRate, 1));
         }
 
-        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId)
+        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId, CancellationToken cancellationToken = default)
         {
             var sixMonthsAgo = DateTime.UtcNow.AddMonths(-6);
             var apps = await _db.JobApplications
                 .Where(a => a.UserId == userId && a.AppliedDate >= sixMonthsAgo)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return apps.GroupBy(a => new { a.AppliedDate.Year, a.AppliedDate.Month })
                 .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)

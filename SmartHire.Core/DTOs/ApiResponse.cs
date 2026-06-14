@@ -26,7 +26,7 @@ namespace SmartHire.Core.DTOs
         }
 
         // Factory helpers for cleaner usage
-        public static ApiResponse<T> SuccessResponse(T data, string message = "Request successful", int statusCode = 200)
+        public static ApiResponse<T> SuccessResponse(T? data, string message = "Request successful", int statusCode = 200)
             => new ApiResponse<T> { Success = true, Message = message, Data = data, StatusCode = statusCode };
 
         public static ApiResponse<T> ErrorResponse(List<string> errors, string message = "Request failed", int statusCode = 400)

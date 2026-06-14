@@ -20,9 +20,9 @@ namespace SmartHire.Infrastructure.Repositories
             _dataProviderService = dataProviderService;
         }
 
-        private async Task<IJobApplicationRepository> GetRepositoryAsync()
+        private async Task<IJobApplicationRepository> GetRepositoryAsync(CancellationToken cancellationToken)
         {
-            var providerType = await _dataProviderService.GetCurrentUserDataProviderTypeAsync();
+            var providerType = await _dataProviderService.GetCurrentUserDataProviderTypeAsync(cancellationToken);
             
             // The specific repositories inherit from BaseRepository which has GetDataProviderType()
             // We need to find the one that matches.
@@ -32,34 +32,34 @@ namespace SmartHire.Infrastructure.Repositories
             return repo ?? _repositories.First(r => r is not JobApplicationRepository);
         }
 
-        public async Task<JobApplication> AddAsync(JobApplication application)
+        public async Task<JobApplication> AddAsync(JobApplication application, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            return await repo.AddAsync(application);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            return await repo.AddAsync(application, cancellationToken);
         }
 
-        public async Task DeleteAsync(int id, string userId)
+        public async Task DeleteAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            await repo.DeleteAsync(id, userId);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            await repo.DeleteAsync(id, userId, cancellationToken);
         }
 
-        public async Task<IEnumerable<JobApplication>> GetAllByUserIdAsync(string userId, ApplicationStatus? status = null)
+        public async Task<IEnumerable<JobApplication>> GetAllByUserIdAsync(string userId, ApplicationStatus? status = null, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            return await repo.GetAllByUserIdAsync(userId, status);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            return await repo.GetAllByUserIdAsync(userId, status, cancellationToken);
         }
 
-        public async Task<JobApplication?> GetByIdAsync(int id, string userId)
+        public async Task<JobApplication?> GetByIdAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            return await repo.GetByIdAsync(id, userId);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            return await repo.GetByIdAsync(id, userId, cancellationToken);
         }
 
-        public async Task UpdateAsync(JobApplication application)
+        public async Task UpdateAsync(JobApplication application, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            await repo.UpdateAsync(application);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            await repo.UpdateAsync(application, cancellationToken);
         }
     }
 }

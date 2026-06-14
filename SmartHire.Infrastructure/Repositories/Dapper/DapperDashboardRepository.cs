@@ -12,7 +12,7 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
         {
         }
 
-        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId)
+        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId, CancellationToken cancellationToken = default)
         {
             const string sql = @"
                 SELECT 
@@ -29,7 +29,7 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
             ";
 
             await using var connection = new SqlConnection(_connectionString);
-            var row = await connection.QuerySingleAsync(sql, new { userId });
+            var row = await connection.QuerySingleAsync(new CommandDefinition(sql, new { userId }, cancellationToken: cancellationToken));
 
             int total = (int)(row.Total ?? 0);
             int active = (int)(row.Active ?? 0);
@@ -41,7 +41,7 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
             return new DashboardStatsDto(total, active, interviews, offers, rejected, Math.Round(responseRate, 1));     
         }
 
-        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId)
+        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId, CancellationToken cancellationToken = default)
         {
             const string sql = @"
                 SELECT FORMAT(AppliedDate,'MMM yyyy') AS Month,
@@ -52,7 +52,7 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
                 GROUP BY FORMAT(AppliedDate,'MMM yyyy'), YEAR(AppliedDate), MONTH(AppliedDate)
                 ORDER BY YEAR(AppliedDate), MONTH(AppliedDate)";
             await using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<MonthlyApplicationDto>(sql, new { userId });
+            return await conn.QueryAsync<MonthlyApplicationDto>(new CommandDefinition(sql, new { userId }, cancellationToken: cancellationToken));
         }
     }
 }

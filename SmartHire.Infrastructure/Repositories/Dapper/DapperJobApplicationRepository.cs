@@ -13,7 +13,7 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
         {
         }
 
-        public async Task<JobApplication> AddAsync(JobApplication application)
+        public async Task<JobApplication> AddAsync(JobApplication application, CancellationToken cancellationToken = default)
         {
             const string sql = @"
                 INSERT INTO JobApplications (UserId, CompanyName, JobTitle, Status, AppliedDate, UpdatedAt)
@@ -21,18 +21,18 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
                 SELECT CAST(SCOPE_IDENTITY() as int);";
 
             using var connection = new SqlConnection(_connectionString);
-            application.Id = await connection.QuerySingleAsync<int>(sql, application);
+            application.Id = await connection.QuerySingleAsync<int>(new CommandDefinition(sql, application, cancellationToken: cancellationToken));
             return application;
         }
 
-        public async Task DeleteAsync(int id, string userId)
+        public async Task DeleteAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
             const string sql = "DELETE FROM JobApplications WHERE Id = @Id AND UserId = @UserId";
             using var connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(sql, new { Id = id, UserId = userId });
+            await connection.ExecuteAsync(new CommandDefinition(sql, new { Id = id, UserId = userId }, cancellationToken: cancellationToken));
         }
 
-        public async Task<IEnumerable<JobApplication>> GetAllByUserIdAsync(string userId, ApplicationStatus? status = null)
+        public async Task<IEnumerable<JobApplication>> GetAllByUserIdAsync(string userId, ApplicationStatus? status = null, CancellationToken cancellationToken = default)
         {
             string sql = "SELECT * FROM JobApplications WHERE UserId = @UserId";
             if (status.HasValue)
@@ -42,17 +42,17 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
             sql += " ORDER BY AppliedDate DESC";
 
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<JobApplication>(sql, new { UserId = userId, Status = status?.ToString() });
+            return await connection.QueryAsync<JobApplication>(new CommandDefinition(sql, new { UserId = userId, Status = status?.ToString() }, cancellationToken: cancellationToken));
         }
 
-        public async Task<JobApplication?> GetByIdAsync(int id, string userId)
+        public async Task<JobApplication?> GetByIdAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
             const string sql = "SELECT * FROM JobApplications WHERE Id = @Id AND UserId = @UserId";
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryFirstOrDefaultAsync<JobApplication>(sql, new { Id = id, UserId = userId });
+            return await connection.QueryFirstOrDefaultAsync<JobApplication>(new CommandDefinition(sql, new { Id = id, UserId = userId }, cancellationToken: cancellationToken));
         }
 
-        public async Task UpdateAsync(JobApplication application)
+        public async Task UpdateAsync(JobApplication application, CancellationToken cancellationToken = default)
         {
             application.UpdatedAt = DateTime.UtcNow;
             const string sql = @"
@@ -61,7 +61,7 @@ namespace SmartHire.Infrastructure.Repositories.Dapper
                 WHERE Id = @Id AND UserId = @UserId";
 
             using var connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(sql, application);
+            await connection.ExecuteAsync(new CommandDefinition(sql, application, cancellationToken: cancellationToken));
         }
     }
 }

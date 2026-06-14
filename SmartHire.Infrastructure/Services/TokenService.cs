@@ -30,7 +30,7 @@ namespace SmartHire.Infrastructure.Services
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         }
 
-        public async Task<string> CreateToken(AppUser user)
+        public async Task<string> CreateToken(AppUser user, CancellationToken cancellationToken = default)
         {
             var claims = new List<Claim>
             {

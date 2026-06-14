@@ -8,8 +8,8 @@ namespace SmartHire.Core.Interfaces
 {
     public interface IDashboardRepository
     {
-        Task<DashboardStatsDto> GetDashboardStatsAsync(string userId);
-        Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId);
+        Task<DashboardStatsDto> GetDashboardStatsAsync(string userId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId, CancellationToken cancellationToken = default);
     }
     public record DashboardStatsDto(
         int Total, int Active, int Interviews,
