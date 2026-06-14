@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartHire.Core.Common
+﻿namespace SmartHire.Core.Common
 {
     public sealed class CommonEnums
     {
         public enum DataProviderType
         {
-            EFCore,
-            Dapper,
-            AdoNet
+            EFCore = 1,
+            Dapper = 2,
+            AdoNet = 3
         }
         public enum UserRole
         {
-            None,
-            Admin,
-            Recruiter,
-            Candidate
+            None = 0,
+            Admin = 1,
+            Recruiter = 2,
+            Candidate = 3
         }
     }
 }
