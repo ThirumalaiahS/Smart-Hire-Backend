@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity;
 using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
 using SmartHire.Infrastructure.Data;
@@ -9,7 +7,8 @@ using SmartHire.Infrastructure.Repositories.AdoNet;
 using SmartHire.Infrastructure.Repositories.Dapper;
 using SmartHire.Infrastructure.Repositories.EfCore;
 using SmartHire.Infrastructure.Services;
-using System.Text;
+
+using SmartHire.Core.AutoMapper;
 
 namespace SmartHire.API.Extensions
 {
@@ -17,6 +16,7 @@ namespace SmartHire.API.Extensions
     {
         public static IServiceCollection AddMyAppServices(this IServiceCollection services)
         {
+            services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
             services.AddHttpContextAccessor();
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IDataProviderService, DataProviderService>();

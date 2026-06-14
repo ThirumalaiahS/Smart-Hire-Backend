@@ -1,9 +1,5 @@
 ﻿using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
-using SmartHire.Infrastructure.Repositories.AdoNet;
-using SmartHire.Infrastructure.Repositories.Dapper;
-using SmartHire.Infrastructure.Repositories.EfCore;
-using static SmartHire.Core.Common.CommonEnums;
 
 namespace SmartHire.Infrastructure.Repositories
 {
