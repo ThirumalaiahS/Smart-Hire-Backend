@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SmartHire.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartHire.Infrastructure.Data
 {
@@ -19,6 +14,7 @@ namespace SmartHire.Infrastructure.Data
         public DbSet<DataProvider> DataProviders => Set<DataProvider>();
         public DbSet<UserSettings> UserSettings => Set<UserSettings>();
         public DbSet<ErrorLogs> ErrorLogs => Set<ErrorLogs>();
+        public DbSet<SystemUser> SystemUsers => Set<SystemUser>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -78,6 +74,16 @@ namespace SmartHire.Infrastructure.Data
             {
                 e.HasKey(x => x.Id);
                 e.Property(x => x.Id).ValueGeneratedOnAdd();
+                e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            });
+
+            builder.Entity<SystemUser>(e =>
+            {
+                e.HasKey(x => x.UserId);
+                e.Property(x => x.UserId).ValueGeneratedOnAdd();
+                e.Property(x => x.FullName).IsRequired().HasMaxLength(100);
+                e.Property(x => x.Email).IsRequired().HasMaxLength(200);
+                e.Property(x => x.IdentityUserId).IsRequired().HasConversion<string>();
                 e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             });
         }

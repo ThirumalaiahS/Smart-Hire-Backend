@@ -52,6 +52,8 @@ namespace SmartHire.API.Controllers
             if (!resultRole.Succeeded) 
                 return BadRequest(ApiResponse<UserDto>.ErrorResponse(resultRole.Errors.Select(e => e.Description).ToList(), statusCode: (int)HttpStatusCode.BadRequest));
 
+
+
             var userDto = new UserDto
             {
                 Email = user.Email!,
