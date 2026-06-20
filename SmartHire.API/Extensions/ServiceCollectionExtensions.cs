@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using SmartHire.Core.AutoMapper;
 using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
 using SmartHire.Infrastructure.Data;
@@ -7,8 +9,6 @@ using SmartHire.Infrastructure.Repositories.AdoNet;
 using SmartHire.Infrastructure.Repositories.Dapper;
 using SmartHire.Infrastructure.Repositories.EfCore;
 using SmartHire.Infrastructure.Services;
-
-using SmartHire.Core.AutoMapper;
 
 namespace SmartHire.API.Extensions
 {
@@ -71,6 +71,37 @@ namespace SmartHire.API.Extensions
                     sp.GetRequiredService<IDataProviderService>()
                 ));
 
+            // SystemUser repositories
+            services.AddScoped<EfCoreSystemUserRepository>();
+            services.AddScoped<AdoSystemUserRepository>();
+            services.AddScoped<DapperSystemUserRepository>();
+
+            services.AddScoped<ISystemUserRepository>(sp =>
+                new SystemUserRepository(
+                    new ISystemUserRepository[]
+                    {
+                        sp.GetRequiredService<EfCoreSystemUserRepository>(),
+                        sp.GetRequiredService<AdoSystemUserRepository>(),
+                        sp.GetRequiredService<DapperSystemUserRepository>()
+                    },
+                    sp.GetRequiredService<IDataProviderService>()
+                ));
+
+            // Admin repositories
+            services.AddScoped<EfCoreAdminRepository>();
+            services.AddScoped<AdoNetAdminRepository>();
+            services.AddScoped<DapperAdminRepository>();
+
+            services.AddScoped<IAdminRepository>(sp =>
+                new AdminRepository(
+                    new IAdminRepository[]
+                    {
+                        sp.GetRequiredService<EfCoreAdminRepository>(),
+                        sp.GetRequiredService<AdoNetAdminRepository>(),
+                        sp.GetRequiredService<DapperAdminRepository>()
+                    },
+                    sp.GetRequiredService<IDataProviderService>()
+                ));
             return services;
         }
 

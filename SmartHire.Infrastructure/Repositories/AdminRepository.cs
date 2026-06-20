@@ -9,5 +9,13 @@ namespace SmartHire.Infrastructure.Repositories
 {
     public class AdminRepository : IAdminRepository
     {
+        private readonly IEnumerable<IAdminRepository> _adminRepositories;
+        private readonly IDataProviderService _dataProviderService;
+
+        public AdminRepository(IEnumerable<IAdminRepository> adminRepositories, IDataProviderService dataProviderService)
+        {
+            _adminRepositories = adminRepositories;
+            _dataProviderService = dataProviderService;
+        }
     }
 }

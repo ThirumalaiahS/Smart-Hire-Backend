@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
 using SmartHire.Infrastructure.Data;
@@ -16,9 +17,36 @@ namespace SmartHire.Infrastructure.Repositories.EfCore
         {
         }
 
-        public Task<bool> CreateUser(SystemUser systemUser, CancellationToken cancellationToken)
+        public async Task<bool> CreateUser(SystemUser systemUser, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _db.SystemUsers.AddAsync(systemUser, cancellationToken);
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> DeleteUser(string id, CancellationToken cancellationToken)
+        {
+            var sysUser = await _db.SystemUsers.FirstOrDefaultAsync(x => x.IdentityUserId == id, cancellationToken);
+            if (sysUser == null)
+                return false;
+
+            _db.SystemUsers.Remove(sysUser);
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> UpdateUserStatus(string id, bool isActive, CancellationToken cancellationToken)
+        {
+            var sysUser = await _db.SystemUsers.FirstOrDefaultAsync(x => x.IdentityUserId == id, cancellationToken);
+            if (sysUser == null)
+                return false;
+
+            sysUser.IsActive = isActive;
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }
