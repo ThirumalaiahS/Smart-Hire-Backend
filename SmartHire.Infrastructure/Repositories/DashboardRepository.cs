@@ -19,9 +19,9 @@ namespace SmartHire.Infrastructure.Repositories
             _dataProviderService = dataProviderService;
         }
 
-        private async Task<IDashboardRepository> GetRepositoryAsync()
+        private async Task<IDashboardRepository> GetRepositoryAsync(CancellationToken cancellationToken)
         {
-            var providerType = await _dataProviderService.GetCurrentUserDataProviderTypeAsync();
+            var providerType = await _dataProviderService.GetCurrentUserDataProviderTypeAsync(cancellationToken);
             
             var repo = _repositories.FirstOrDefault(r => 
                 r is BaseRepository baseRepo && baseRepo.GetDataProviderType() == providerType);
@@ -29,16 +29,16 @@ namespace SmartHire.Infrastructure.Repositories
             return repo ?? _repositories.First(r => r is not DashboardRepository);
         }
 
-        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId)
+        public async Task<DashboardStatsDto> GetDashboardStatsAsync(string userId, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            return await repo.GetDashboardStatsAsync(userId);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            return await repo.GetDashboardStatsAsync(userId, cancellationToken);
         }
 
-        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId)
+        public async Task<IEnumerable<MonthlyApplicationDto>> GetMonthlyApplicationsAsync(string userId, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            return await repo.GetMonthlyApplicationsAsync(userId);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            return await repo.GetMonthlyApplicationsAsync(userId, cancellationToken);
         }
     }
 }

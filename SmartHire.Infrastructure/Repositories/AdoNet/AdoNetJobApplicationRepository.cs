@@ -13,7 +13,7 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
         {
         }
 
-        public async Task<JobApplication> AddAsync(JobApplication application)
+        public async Task<JobApplication> AddAsync(JobApplication application, CancellationToken cancellationToken = default)
         {
             const string sql = @"
                 INSERT INTO JobApplications (UserId, CompanyName, JobTitle, Status, AppliedDate, UpdatedAt)
@@ -29,12 +29,12 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             command.Parameters.AddWithValue("@AppliedDate", application.AppliedDate);
             command.Parameters.AddWithValue("@UpdatedAt", application.UpdatedAt);
 
-            await connection.OpenAsync();
-            application.Id = (int)(await command.ExecuteScalarAsync() ?? 0);
+            await connection.OpenAsync(cancellationToken);
+            application.Id = (int)(await command.ExecuteScalarAsync(cancellationToken) ?? 0);
             return application;
         }
 
-        public async Task DeleteAsync(int id, string userId)
+        public async Task DeleteAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
             const string sql = "DELETE FROM JobApplications WHERE Id = @Id AND UserId = @UserId";
             using var connection = new SqlConnection(_connectionString);
@@ -42,11 +42,11 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             command.Parameters.AddWithValue("@Id", id);
             command.Parameters.AddWithValue("@UserId", userId);
 
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            await connection.OpenAsync(cancellationToken);
+            await command.ExecuteNonQueryAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<JobApplication>> GetAllByUserIdAsync(string userId, ApplicationStatus? status = null)
+        public async Task<IEnumerable<JobApplication>> GetAllByUserIdAsync(string userId, ApplicationStatus? status = null, CancellationToken cancellationToken = default)
         {
             var applications = new List<JobApplication>();
             string sql = "SELECT * FROM JobApplications WHERE UserId = @UserId";
@@ -64,16 +64,16 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
                 command.Parameters.AddWithValue("@Status", status.Value.ToString());
             }
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await connection.OpenAsync(cancellationToken);
+            using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 applications.Add(MapReaderToJobApplication(reader));
             }
             return applications;
         }
 
-        public async Task<JobApplication?> GetByIdAsync(int id, string userId)
+        public async Task<JobApplication?> GetByIdAsync(int id, string userId, CancellationToken cancellationToken = default)
         {
             const string sql = "SELECT * FROM JobApplications WHERE Id = @Id AND UserId = @UserId";
             using var connection = new SqlConnection(_connectionString);
@@ -81,16 +81,16 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             command.Parameters.AddWithValue("@Id", id);
             command.Parameters.AddWithValue("@UserId", userId);
 
-            await connection.OpenAsync();
-            using var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            await connection.OpenAsync(cancellationToken);
+            using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
             {
                 return MapReaderToJobApplication(reader);
             }
             return null;
         }
 
-        public async Task UpdateAsync(JobApplication application)
+        public async Task UpdateAsync(JobApplication application, CancellationToken cancellationToken = default)
         {
             application.UpdatedAt = DateTime.UtcNow;
             const string sql = @"
@@ -107,8 +107,8 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             command.Parameters.AddWithValue("@Status", application.Status.ToString());
             command.Parameters.AddWithValue("@UpdatedAt", application.UpdatedAt);
 
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            await connection.OpenAsync(cancellationToken);
+            await command.ExecuteNonQueryAsync(cancellationToken);
         }
 
         private static JobApplication MapReaderToJobApplication(SqlDataReader reader)

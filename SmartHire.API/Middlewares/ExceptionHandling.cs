@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using SmartHire.Core.DTOs;
 using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
 using System.Net;
@@ -48,9 +49,13 @@ namespace SmartHire.API.Middlewares
 
                 await errorLogRepository.CreateErrorLogAsync(errorLog);
 
+                var response = ApiResponse<object>.ErrorResponse(
+                    new List<string> { ex.Message }, 
+                    "An unexpected error occurred. Please try again later.", 
+                    (int)HttpStatusCode.InternalServerError);
+
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("{ \"message\": \"An unexpected error occurred. Please try again later.\" }");
+                await context.Response.WriteAsJsonAsync(response);
             }
 
         }

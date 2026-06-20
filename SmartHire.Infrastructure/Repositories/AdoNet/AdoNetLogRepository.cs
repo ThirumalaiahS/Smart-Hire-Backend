@@ -11,7 +11,7 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             : base(configuration)
         {
         }
-        public async Task CreateErrorLogAsync(ErrorLogs errorLogs)
+        public async Task CreateErrorLogAsync(ErrorLogs errorLogs, CancellationToken cancellationToken = default)
         {
             const string sql = @"
                 INSERT INTO ErrorLogs(UserId, Endpoint, HttpMethod, StatusCode, ExceptionType, ErrorMessage, StackTrace, RequestPayload, ResponsePayload, CorrelationId, Source, CreatedAt, Severity)
@@ -35,8 +35,8 @@ namespace SmartHire.Infrastructure.Repositories.AdoNet
             command.Parameters.AddWithValue("@CreatedAt", errorLogs.CreatedAt);
             command.Parameters.AddWithValue("@Severity", errorLogs.Severity ?? string.Empty);
 
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            await connection.OpenAsync(cancellationToken);
+            await command.ExecuteNonQueryAsync(cancellationToken);
         }
     }
 }

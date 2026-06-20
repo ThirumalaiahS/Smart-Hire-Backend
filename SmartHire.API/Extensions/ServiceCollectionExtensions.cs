@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using SmartHire.Core.AutoMapper;
 using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
 using SmartHire.Infrastructure.Data;
@@ -9,7 +9,6 @@ using SmartHire.Infrastructure.Repositories.AdoNet;
 using SmartHire.Infrastructure.Repositories.Dapper;
 using SmartHire.Infrastructure.Repositories.EfCore;
 using SmartHire.Infrastructure.Services;
-using System.Text;
 
 namespace SmartHire.API.Extensions
 {
@@ -17,6 +16,7 @@ namespace SmartHire.API.Extensions
     {
         public static IServiceCollection AddMyAppServices(this IServiceCollection services)
         {
+            services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
             services.AddHttpContextAccessor();
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IDataProviderService, DataProviderService>();
@@ -28,9 +28,9 @@ namespace SmartHire.API.Extensions
             services.AddScoped<AdoNetJobApplicationRepository>();
 
             // Register the dispatcher as the primary implementation
-            services.AddScoped<IJobApplicationRepository>(sp => 
+            services.AddScoped<IJobApplicationRepository>(sp =>
                 new JobApplicationRepository(
-                    new IJobApplicationRepository[] 
+                    new IJobApplicationRepository[]
                     {
                         sp.GetRequiredService<EfCoreJobApplicationRepository>(),
                         sp.GetRequiredService<DapperJobApplicationRepository>(),
@@ -44,9 +44,9 @@ namespace SmartHire.API.Extensions
             services.AddScoped<DapperDashboardRepository>();
             services.AddScoped<AdoNetDashboardRepository>();
 
-            services.AddScoped<IDashboardRepository>(sp => 
+            services.AddScoped<IDashboardRepository>(sp =>
                 new DashboardRepository(
-                    new IDashboardRepository[] 
+                    new IDashboardRepository[]
                     {
                         sp.GetRequiredService<EfCoreDashboardRepository>(),
                         sp.GetRequiredService<DapperDashboardRepository>(),
@@ -71,6 +71,37 @@ namespace SmartHire.API.Extensions
                     sp.GetRequiredService<IDataProviderService>()
                 ));
 
+            // SystemUser repositories
+            services.AddScoped<EfCoreSystemUserRepository>();
+            services.AddScoped<AdoSystemUserRepository>();
+            services.AddScoped<DapperSystemUserRepository>();
+
+            services.AddScoped<ISystemUserRepository>(sp =>
+                new SystemUserRepository(
+                    new ISystemUserRepository[]
+                    {
+                        sp.GetRequiredService<EfCoreSystemUserRepository>(),
+                        sp.GetRequiredService<AdoSystemUserRepository>(),
+                        sp.GetRequiredService<DapperSystemUserRepository>()
+                    },
+                    sp.GetRequiredService<IDataProviderService>()
+                ));
+
+            // Admin repositories
+            services.AddScoped<EfCoreAdminRepository>();
+            services.AddScoped<AdoNetAdminRepository>();
+            services.AddScoped<DapperAdminRepository>();
+
+            services.AddScoped<IAdminRepository>(sp =>
+                new AdminRepository(
+                    new IAdminRepository[]
+                    {
+                        sp.GetRequiredService<EfCoreAdminRepository>(),
+                        sp.GetRequiredService<AdoNetAdminRepository>(),
+                        sp.GetRequiredService<DapperAdminRepository>()
+                    },
+                    sp.GetRequiredService<IDataProviderService>()
+                ));
             return services;
         }
 
@@ -78,7 +109,7 @@ namespace SmartHire.API.Extensions
         {
             services.AddIdentity<AppUser, IdentityRole>(o =>
             {
-                o.Password.RequireDigit = true; 
+                o.Password.RequireDigit = true;
                 o.Password.RequiredLength = 8;
                 o.Password.RequireNonAlphanumeric = false;
             })
@@ -86,6 +117,22 @@ namespace SmartHire.API.Extensions
             .AddDefaultTokenProviders();
 
             return services;
+        }
+        public static IApplicationBuilder SeedRoles(this IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var roles = new[] { "Admin", "Recruiter", "Candidate" };
+                foreach (var role in roles)
+                {
+                    if (!roleManager.RoleExistsAsync(role).Result)
+                    {
+                        roleManager.CreateAsync(new IdentityRole(role)).Wait();
+                    }
+                }
+            }
+            return app;
         }
     }
 

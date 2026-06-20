@@ -19,7 +19,7 @@ namespace SmartHire.Infrastructure.Services
             _userContextService = userContextService;
         }
 
-        public async Task<DataProviderType> GetCurrentUserDataProviderTypeAsync()
+        public async Task<DataProviderType> GetCurrentUserDataProviderTypeAsync(CancellationToken cancellationToken = default)
         {
             var userId = _userContextService.GetUserId();
             if (string.IsNullOrEmpty(userId))
@@ -29,7 +29,7 @@ namespace SmartHire.Infrastructure.Services
 
             var settings = await _db.UserSettings
                 .Include(us => us.DataProvider)
-                .FirstOrDefaultAsync(us => us.UserId == userId);
+                .FirstOrDefaultAsync(us => us.UserId == userId, cancellationToken);
 
             if (settings == null)
             {

@@ -1,7 +1,11 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartHire.Core.DTOs;
+using SmartHire.Core.DTOs.Job;
 using SmartHire.Core.Entities;
 using SmartHire.Core.Interfaces;
+using System.Net;
 
 namespace SmartHire.API.Controllers
 {
@@ -12,81 +16,93 @@ namespace SmartHire.API.Controllers
     {
         private readonly IJobApplicationRepository _repository;
         private readonly IUserContextService _userContext;
+        private readonly IMapper _mapper;
 
-        public JobApplicationsController(IJobApplicationRepository repository, IUserContextService userContext)
+        public JobApplicationsController(IJobApplicationRepository repository, IUserContextService userContext, IMapper mapper)
         {
             _repository = repository;
             _userContext = userContext;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobApplication>>> GetJobApplications([FromQuery] ApplicationStatus? status)
+        public async Task<IActionResult> GetJobApplications([FromQuery] ApplicationStatus? status, CancellationToken cancellationToken)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
-            var applications = await _repository.GetAllByUserIdAsync(userId, status);
-            return Ok(applications);
+            var applications = await _repository.GetAllByUserIdAsync(userId, status, cancellationToken);
+            var dtos = _mapper.Map<IEnumerable<JobApplicationDTO>>(applications);
+            return Ok(ApiResponse<IEnumerable<JobApplicationDTO>>.SuccessResponse(dtos));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobApplication>> GetJobApplication(int id)
+        public async Task<IActionResult> GetJobApplication(int id, CancellationToken cancellationToken)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
-            var application = await _repository.GetByIdAsync(id, userId);
+            var application = await _repository.GetByIdAsync(id, userId, cancellationToken);
 
             if (application == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<object>.ErrorResponse(new List<string> { "Job application not found" }, statusCode: (int)HttpStatusCode.NotFound));
             }
 
-            return Ok(application);
+            var dto = _mapper.Map<JobApplicationDTO>(application);
+            return Ok(ApiResponse<JobApplicationDTO>.SuccessResponse(dto));
         }
 
         [HttpPost]
-        public async Task<ActionResult<JobApplication>> CreateJobApplication(JobApplication application)
+        public async Task<IActionResult> CreateJobApplication(CreateJobApplicationDto createDto, CancellationToken cancellationToken)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
+            var application = _mapper.Map<JobApplication>(createDto);
             application.UserId = userId;
-            var createdApplication = await _repository.AddAsync(application);
+            var createdApplication = await _repository.AddAsync(application, cancellationToken);
 
-            return CreatedAtAction(nameof(GetJobApplication), new { id = createdApplication.Id }, createdApplication);
+            var resultDto = _mapper.Map<JobApplicationDTO>(createdApplication);
+
+            return CreatedAtAction(nameof(GetJobApplication), new { id = createdApplication.Id }, ApiResponse<JobApplicationDTO>.SuccessResponse(resultDto, statusCode: (int)HttpStatusCode.Created));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateJobApplication(int id, JobApplication application)
+        public async Task<IActionResult> UpdateJobApplication(int id, UpdateJobApplicationDto updateDto, CancellationToken cancellationToken)
         {
-            if (id != application.Id)
-            {
-                return BadRequest();
-            }
-
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
             // Ensure the user owns the application
-            var existing = await _repository.GetByIdAsync(id, userId);
-            if (existing == null) return NotFound();
+            var existing = await _repository.GetByIdAsync(id, userId, cancellationToken);
+            if (existing == null) 
+                return NotFound(ApiResponse<object>.ErrorResponse(new List<string> { "Job application not found" }, statusCode: (int)HttpStatusCode.NotFound));
 
-            application.UserId = userId; // Ensure UserId is set to the current user
-            await _repository.UpdateAsync(application);
+            _mapper.Map(updateDto, existing);
+            await _repository.UpdateAsync(existing, cancellationToken);
 
-            return NoContent();
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Job application updated successfully."));
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJobApplication(int id)
+        public async Task<IActionResult> DeleteJobApplication(int id, CancellationToken cancellationToken)
         {
             var userId = _userContext.GetUserId();
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized(ApiResponse<object>.ErrorResponse(new List<string> { "Unauthorized access" }, statusCode: (int)HttpStatusCode.Unauthorized));
 
-            await _repository.DeleteAsync(id, userId);
+            var existing = await _repository.GetByIdAsync(id, userId, cancellationToken);
+            if (existing == null) 
+                return NotFound(ApiResponse<object>.ErrorResponse(new List<string> { "Job application not found" }, statusCode: (int)HttpStatusCode.NotFound));
 
-            return NoContent();
+            await _repository.DeleteAsync(id, userId, cancellationToken);
+
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Job application deleted successfully."));
         }
     }
 }

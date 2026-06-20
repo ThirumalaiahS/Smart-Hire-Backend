@@ -16,9 +16,9 @@ namespace SmartHire.Infrastructure.Repositories
             _dataProviderService = dataProviderService;
         }
 
-        private async Task<ILogRepository> GetRepositoryAsync()
+        private async Task<ILogRepository> GetRepositoryAsync(CancellationToken cancellationToken)
         {
-            var providerType = await _dataProviderService.GetCurrentUserDataProviderTypeAsync();
+            var providerType = await _dataProviderService.GetCurrentUserDataProviderTypeAsync(cancellationToken);
 
             var repo = _repositories.FirstOrDefault(r =>
                 r is BaseRepository baseRepo && baseRepo.GetDataProviderType() == providerType);
@@ -26,10 +26,10 @@ namespace SmartHire.Infrastructure.Repositories
             return repo ?? _repositories.First(r => r is not LogRepository);
         }
 
-        public async Task CreateErrorLogAsync(ErrorLogs errorLogs)
+        public async Task CreateErrorLogAsync(ErrorLogs errorLogs, CancellationToken cancellationToken = default)
         {
-            var repo = await GetRepositoryAsync();
-            await repo.CreateErrorLogAsync(errorLogs);
+            var repo = await GetRepositoryAsync(cancellationToken);
+            await repo.CreateErrorLogAsync(errorLogs, cancellationToken);
         }
     }
 }

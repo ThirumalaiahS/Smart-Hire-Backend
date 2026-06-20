@@ -5,10 +5,21 @@ using SmartHire.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureSerilog(builder.Configuration);
-builder.Services.AddDatabaseContext(builder.Configuration);
+
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseInMemoryDatabase("InMemoryAppDbForTesting"));
+}
+else
+{
+    builder.Services.AddDatabaseContext(builder.Configuration);
+}
+
 builder.Services.AddMyAppServices();
 builder.Services.AddIdentityService();
 builder.Services.AddControllers();
+builder.Services.AddValidatorService();
 builder.Services.AddHealthChecks();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -18,8 +29,10 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.SeedRoles();
+
 app.UseExceptionHandling();
-app.UseSwaggerIfDevelopment();
+app.UseSwaggerIfDevelopment();  
 app.UseHttpsRedirection();
 
 app.UseRouting();

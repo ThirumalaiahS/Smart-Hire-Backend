@@ -9,6 +9,6 @@ namespace SmartHire.Core.Interfaces
 {
     public interface ILogRepository
     {
-        Task CreateErrorLogAsync(ErrorLogs errorLogs);
+        Task CreateErrorLogAsync(ErrorLogs errorLogs, CancellationToken cancellationToken = default);
     }
 }
