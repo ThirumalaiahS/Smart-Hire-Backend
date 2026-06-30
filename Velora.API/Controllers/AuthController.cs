@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Velora.Core.DTOs;
 using Velora.Core.Entities;
 using Velora.Core.Interfaces;
-using System.Net;
 
 namespace Velora.API.Controllers
 {
@@ -111,7 +111,41 @@ namespace Velora.API.Controllers
             var userDto = await _tokenService.GenerateTokens(user, ipAddress, cancellationToken);
 
             return Ok(ApiResponse<UserDto>.SuccessResponse(userDto, statusCode: (int)HttpStatusCode.OK));
-        }        
+        }
+
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDTO request, CancellationToken cancellationToken)
+        {
+            var authHeader = Request.Headers["Authorization"].ToString();
+            var token = authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+                ? authHeader.Substring(7).Trim()
+                : authHeader;
+            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() ?? HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+
+            try
+            {
+                var userDto = await _tokenService.RefreshToken(token, request.RefreshToken, ipAddress, cancellationToken);
+                return Ok(ApiResponse<UserDto>.SuccessResponse(userDto, statusCode: (int)HttpStatusCode.OK));
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ApiResponse<UserDto>.ErrorResponse(new List<string> { ex.Message }, statusCode: (int)HttpStatusCode.Unauthorized));
+            }
+        }
+
+        [Authorize]
+        [HttpPost("revoke")]
+        public async Task<IActionResult> Revoke([FromBody] RefreshTokenRequestDTO request, CancellationToken cancellationToken)
+        {
+            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault() ?? HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+            var result = await _tokenService.RevokeToken(request.RefreshToken, ipAddress, cancellationToken);
+            if (!result)
+            {
+                return BadRequest(ApiResponse<object>.ErrorResponse(new List<string> { "Invalid or already revoked refresh token." }, statusCode: (int)HttpStatusCode.BadRequest));
+            }
+            return Ok(ApiResponse<object>.SuccessResponse(null!, "Token revoked successfully.", statusCode: (int)HttpStatusCode.OK));
+        }
 
         [Authorize(Roles = "Admin")]
         [HttpPatch("deactivate/{id}")]

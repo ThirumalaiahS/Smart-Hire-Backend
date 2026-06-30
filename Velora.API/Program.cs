@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Velora.API.Extensions;
 using Velora.Infrastructure.Data;
 
@@ -29,8 +29,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.SeedRoles();
-
 app.UseExceptionHandling();
 app.UseSwaggerIfDevelopment();  
 app.UseHttpsRedirection();
@@ -43,6 +41,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 await app.ApplyMigrationsIfNotTestingAsync();
+await app.SeedRoles();
 
 app.MapControllers();
 app.MapHealthChecks("/health");

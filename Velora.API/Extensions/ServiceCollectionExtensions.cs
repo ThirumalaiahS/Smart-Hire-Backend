@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
+using Serilog;
 using Velora.Core.AutoMapper;
 using Velora.Core.Entities;
 using Velora.Core.Interfaces;
@@ -118,7 +118,7 @@ namespace Velora.API.Extensions
 
             return services;
         }
-        public static IApplicationBuilder SeedRoles(this IApplicationBuilder app)
+        public static async Task<IApplicationBuilder> SeedRoles(this IApplicationBuilder app)
         {
             using (var scope = app.ApplicationServices.CreateScope())
             {
@@ -126,9 +126,19 @@ namespace Velora.API.Extensions
                 var roles = new[] { "Admin", "Recruiter", "Candidate" };
                 foreach (var role in roles)
                 {
-                    if (!roleManager.RoleExistsAsync(role).Result)
+                    var exists = await roleManager.RoleExistsAsync(role);
+
+                    if (!exists)
                     {
-                        roleManager.CreateAsync(new IdentityRole(role)).Wait();
+                        var result = await roleManager.CreateAsync(new IdentityRole(role));
+
+                        if (!result.Succeeded)
+                        {
+                            foreach (var error in result.Errors)
+                            {
+                                Log.Error($"{error.Code} - {error.Description}");
+                            }
+                        }
                     }
                 }
             }
